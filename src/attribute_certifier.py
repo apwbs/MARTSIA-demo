@@ -29,7 +29,7 @@ def store_process_id_to_env(value):
     line = "\n" + name + "=" + value + "\n"
     data.append(line)
 
-    with open('.env', 'w', encoding='utf-8') as file:
+    with open('../src/.env', 'w', encoding='utf-8') as file:
         file.writelines(data)
 
 
