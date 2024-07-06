@@ -50,9 +50,9 @@ def generate_keys(reader_name):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Reader name', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('-r', '--reader', type=str, help='Reader name')
+    parser.add_argument('-r', '--reader', type=str, help='Specify a reader name')
     args = parser.parse_args()
     if args.reader:
         generate_keys(args.reader)
     else:
-        print("Please enter reader name")
+        parser.print_help()
