@@ -40,20 +40,16 @@ def generate_attributes(roles_file):
     process_instance_id = random.randint(1, 2 ** 64)
     print(f'process instance id: {process_instance_id}')
 
-    # Read roles from the provided file
     with open(roles_file, 'r') as file:
         roles_data = json.load(file)
 
-    # Ensure all values are lists
     roles = {key: [value] if not isinstance(value, list) else value for key, value in roles_data.items()}
 
-    # Get authority names from .env
     auth1 = config('AUTHORITY1_NAME')
     auth2 = config('AUTHORITY2_NAME')
     auth3 = config('AUTHORITY3_NAME')
     auth4 = config('AUTHORITY4_NAME')
 
-    # Generate dict_users based on the roles and authority names
     dict_users = {}
     for role, attributes in roles.items():
         address = config(f'{role}_ADDRESS')
