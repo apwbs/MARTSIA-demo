@@ -1,4 +1,4 @@
 {
-    "Import_Declaration.pdf": "(MANUFACTURER@AUTH1 or (SUPPLIER@AUTH2, ELECTRONICS@AUTH3))",
-    "Transport_Document.pdf": "(MANUFACTURER@AUTH1 or (SUPPLIER@AUTH2, MECHANICS@AUTH4))"
+    "Import_Declaration.pdf": "(MANUFACTURER@AUTH1 or (SUPPLIER@AUTH2 and ELECTRONICS@AUTH3))",
+    "Transport_Document.pdf": "(MANUFACTURER@AUTH1 or (SUPPLIER@AUTH2 and MECHANICS@AUTH4))"
 }
