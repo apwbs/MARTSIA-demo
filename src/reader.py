@@ -108,7 +108,6 @@ def start(process_instance_id, message_id, slice_id, sender_address, output_fold
     F = lambda x: self.group.hash(x, G2)
     public_parameters["H"] = H
     public_parameters["F"] = F
-    print(sender_address)
 
     x.execute("SELECT * FROM authorities_generated_decription_keys WHERE process_instance=? AND authority_name=? AND reader_address=?",
               (str(process_instance_id), 'Auth-1', sender_address))
