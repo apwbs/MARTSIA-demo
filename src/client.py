@@ -67,7 +67,6 @@ def send(msg):
         #     x.execute("INSERT OR IGNORE INTO handshake_number VALUES (?,?,?)",
         #               (process_instance_id, authority, receive[16:]))
         #     connection.commit()
-        print(authority)
         x.execute("INSERT OR IGNORE INTO authorities_generated_decription_keys VALUES (?,?,?,?)",
                   (str(process_instance_id), reader_address, authority, receive[23:]))
         connection.commit()
