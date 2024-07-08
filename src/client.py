@@ -39,10 +39,14 @@ def receive_message():
     message = ""
     while True:
         data = conn.recv(1024).decode(FORMAT)
-        if not data:  # No data received
+        if not data:
             break
         message += data
-        return message
+
+        if message.startswith("Number to sign:"):
+            return message
+        elif message.startswith("Here is my partial key:"):
+            return message
 
 
 def send(msg):
@@ -55,7 +59,7 @@ def send(msg):
     conn.send(message)
     receive = receive_message()
     if len(receive) != 0:
-        if receive.startswith('number to sign:'):
+        if receive.startswith('Number to sign:'):
             x.execute("INSERT OR IGNORE INTO handshake_number VALUES (?,?,?)",
                       (str(process_instance_id), authority, receive[16:]))
             connection.commit()
@@ -99,8 +103,8 @@ if __name__ == '__main__':
     sender_name = args.reader_name
     sender_address = config(sender_name + '_ADDRESS')
 
-    gid = sender_name
-    reader_address = sender_name
+    gid = sender_address
+    reader_address = sender_address
 
     authority = 'Auth-' + str(args.authority)
 
@@ -109,7 +113,6 @@ if __name__ == '__main__':
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     conn = context.wrap_socket(s, server_side=False, server_hostname=server_sni_hostname)
     conn.connect(ADDR)
-
     if args.handshake:
         send(authority + " - Start handshake§" + str(process_instance_id) + '§' + reader_address)
 
@@ -119,4 +122,4 @@ if __name__ == '__main__':
             authority + " - Generate your part of my key§" + gid + '§' + str(process_instance_id) + '§' + reader_address
             + '§' + str(signature_sending))
 
-send(DISCONNECT_MESSAGE)
+

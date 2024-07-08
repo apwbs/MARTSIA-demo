@@ -27,4 +27,3 @@ fi
 
 # Run the Python script with the provided authority number
 python3 ../src/server_authority.py -a "$authority"
-echo "✅ Authority server script completed"

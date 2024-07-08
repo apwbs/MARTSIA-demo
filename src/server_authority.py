@@ -90,13 +90,11 @@ class AuthorityServer:
                 message = msg.split('§')
                 if message[0] == "Auth-" + str(self.authority_number) + " - Start handshake":
                     number_to_sign = self.generate_number_to_sign(message[1], message[2])
-                    conn.send(b'number to sign: ' + str(number_to_sign).encode())
+                    conn.send(b'Number to sign: ' + str(number_to_sign).encode())
                 if message[0] == "Auth-" + str(self.authority_number) + " - Generate your part of my key":
                     if self.check_handshake(message[2], message[3], message[4]):
                         user_sk1 = self.generate_key_auth(message[1], message[2], message[3])
-                        conn.send(user_sk1)
-                    else:
-                        conn.send("")
+                        conn.send(b'Here is my partial key: ' + user_sk1)
 
         conn.close()
 
