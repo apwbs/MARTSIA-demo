@@ -11,10 +11,10 @@ x = connection.cursor()
 
 
 def sign_number(authority_invoked):
-    x.execute("SELECT * FROM handshake_number WHERE process_instance=? AND authority_name=?",
-              (str(process_instance_id), authority_invoked))
+    x.execute("SELECT * FROM handshake_number WHERE process_instance=? AND authority_name=? AND reader_address=?",
+              (str(process_instance_id), authority_invoked, reader_address))
     result = x.fetchall()
-    number_to_sign = result[0][2]
+    number_to_sign = result[0][3]
 
     x.execute("SELECT * FROM rsa_private_key WHERE reader_address=?", (reader_address,))
     result = x.fetchall()
@@ -60,15 +60,16 @@ def send(msg):
     receive = receive_message()
     if len(receive) != 0:
         if receive.startswith('Number to sign:'):
-            x.execute("INSERT OR IGNORE INTO handshake_number VALUES (?,?,?)",
-                      (str(process_instance_id), authority, receive[16:]))
+            x.execute("INSERT OR IGNORE INTO handshake_number VALUES (?,?,?,?)",
+                      (str(process_instance_id), reader_address, authority, receive[16:]))
             connection.commit()
             return True
         #     x.execute("INSERT OR IGNORE INTO handshake_number VALUES (?,?,?)",
         #               (process_instance_id, authority, receive[16:]))
         #     connection.commit()
-        x.execute("INSERT OR IGNORE INTO authorities_generated_decription_keys VALUES (?,?,?)",
-                  (str(process_instance_id), authority, receive))
+        print(authority)
+        x.execute("INSERT OR IGNORE INTO authorities_generated_decription_keys VALUES (?,?,?,?)",
+                  (str(process_instance_id), reader_address, authority, receive[23:]))
         connection.commit()
 
 
@@ -90,7 +91,7 @@ creation and connection of the secure channel using SSL protocol
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Client request details",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('-rd', '--reader_name', type=str, help='Reader name')
+    parser.add_argument('-rd', '--requester_name', type=str, help='Requester name')
     parser.add_argument('-a', '--authority', type=int, help='Authority number')
     parser.add_argument('-hs', '--handshake', action='store_true', help='Handshake request')
     parser.add_argument('-gk', '--generate_key', action='store_true', help='Generate key request')
@@ -100,8 +101,7 @@ if __name__ == '__main__':
     SERVER = config('SERVER_ADDRESS')
     ADDR = (SERVER, PORT)
 
-    sender_name = args.reader_name
-    sender_address = config(sender_name + '_ADDRESS')
+    sender_address = config(args.requester_name + '_ADDRESS')
 
     gid = sender_address
     reader_address = sender_address

@@ -30,14 +30,16 @@ CREATE TABLE rsa_private_key (
 
 CREATE TABLE handshake_number ( 
     process_instance TEXT,
+    reader_address TEXT,
     authority_name TEXT,
     number_to_sign TEXT,
-    primary key (process_instance, authority_name)
+    primary key (process_instance, reader_address, authority_name)
 );
 
 CREATE TABLE authorities_generated_decription_keys ( 
     process_instance TEXT,
+    reader_address TEXT,
     authority_name TEXT,
     decription_key TEXT,
-    primary key (process_instance, authority_name)
+    primary key (process_instance, reader_address, authority_name)
 );

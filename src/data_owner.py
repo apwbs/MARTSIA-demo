@@ -222,14 +222,14 @@ if __name__ == '__main__':
     process_instance_id = int(process_instance_id_env)
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-g', '--generate', action='store_true')
+    parser.add_argument('-g', '--generate_parameters', action='store_true')
     parser.add_argument('-c', '--cipher', action='store_true')
     parser.add_argument('-s', '--sender_name', type=str, help='Sender address of the requester')
     parser.add_argument('-i', '--input', type=str, help='Path to the input-file to load.')
     parser.add_argument('-p', '--policies', type=str, help='Path to the policies-file to load.')
 
     args = parser.parse_args()
-    if args.generate:
+    if args.generate_parameters:
         if not retrieve_public_parameters(process_instance_id):
             generate_pp_pk(process_instance_id)
     elif args.cipher:

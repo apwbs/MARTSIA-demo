@@ -108,32 +108,33 @@ def start(process_instance_id, message_id, slice_id, sender_address, output_fold
     F = lambda x: self.group.hash(x, G2)
     public_parameters["H"] = H
     public_parameters["F"] = F
+    print(sender_address)
 
-    x.execute("SELECT * FROM authorities_generated_decription_keys WHERE process_instance=? AND authority_name=?",
-              (str(process_instance_id), 'Auth-1'))
+    x.execute("SELECT * FROM authorities_generated_decription_keys WHERE process_instance=? AND authority_name=? AND reader_address=?",
+              (str(process_instance_id), 'Auth-1', sender_address))
     result = x.fetchall()
-    user_sk1 = result[0][2]
+    user_sk1 = result[0][3]
     user_sk1 = user_sk1.encode()
     user_sk1 = bytesToObject(user_sk1, groupObj)
 
-    x.execute("SELECT * FROM authorities_generated_decription_keys WHERE process_instance=? AND authority_name=?",
-              (str(process_instance_id), 'Auth-2'))
+    x.execute("SELECT * FROM authorities_generated_decription_keys WHERE process_instance=? AND authority_name=? AND reader_address=?",
+              (str(process_instance_id), 'Auth-2', sender_address))
     result = x.fetchall()
-    user_sk2 = result[0][2]
+    user_sk2 = result[0][3]
     user_sk2 = user_sk2.encode()
     user_sk2 = bytesToObject(user_sk2, groupObj)
 
-    x.execute("SELECT * FROM authorities_generated_decription_keys WHERE process_instance=? AND authority_name=?",
-              (str(process_instance_id), 'Auth-3'))
+    x.execute("SELECT * FROM authorities_generated_decription_keys WHERE process_instance=? AND authority_name=? AND reader_address=?",
+              (str(process_instance_id), 'Auth-3', sender_address))
     result = x.fetchall()
-    user_sk3 = result[0][2]
+    user_sk3 = result[0][3]
     user_sk3 = user_sk3.encode()
     user_sk3 = bytesToObject(user_sk3, groupObj)
 
-    x.execute("SELECT * FROM authorities_generated_decription_keys WHERE process_instance=? AND authority_name=?",
-              (str(process_instance_id), 'Auth-4'))
+    x.execute("SELECT * FROM authorities_generated_decription_keys WHERE process_instance=? AND authority_name=? AND reader_address=?",
+              (str(process_instance_id), 'Auth-4', sender_address))
     result = x.fetchall()
-    user_sk4 = result[0][2]
+    user_sk4 = result[0][3]
     user_sk4 = user_sk4.encode()
     user_sk4 = bytesToObject(user_sk4, groupObj)
 
@@ -167,17 +168,16 @@ if __name__ == '__main__':
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("-m", "--message_id", type=int, help="message id")
     parser.add_argument("-s", "--slice_id", type=int, help="slice id")
-    parser.add_argument("-g", "--generate", action="store_true", help='Retrieval of public parameters')
+    parser.add_argument("-g", "--generate_parameters", action="store_true", help='Retrieval of public parameters')
     parser.add_argument("-a", "--access", action="store_true", help='Access data')
-    parser.add_argument("-sa, --sender_name", type=str, help="global identifier")
+    parser.add_argument("--reader_name", type=str, help="Name of the requester")
     parser.add_argument("-o", "--output_folder", type=str, help="Path to the output folder")
     args = parser.parse_args()
-    if args.generate:
+    if args.generate_parameters:
         generate_public_parameters(process_instance_id)
     elif args.access:
         message_id = args.message_id
         slice_id = args.slice_id
-        sender_name = args.reader_name
-        sender_address = config(sender_name + '_ADDRESS')
+        sender_address = config(args.reader_name + '_ADDRESS')
         output_folder = args.output_folder
         start(process_instance_id, message_id, slice_id, sender_address, output_folder)
