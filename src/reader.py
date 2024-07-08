@@ -101,7 +101,7 @@ def actual_decryption(remaining, public_parameters, user_sk, output_folder):
     base64_to_file(decryptedFile, output_folder_path+"/"+remaining['FileName'])
 
 
-def start(process_instance_id, message_id, slice_id, gid, output_folder):
+def start(process_instance_id, message_id, slice_id, sender_address, output_folder):
     response = retrieve_public_parameters(process_instance_id)
     public_parameters = bytesToObject(response, groupObj)
     H = lambda x: self.group.hash(x, G2)
@@ -109,8 +109,6 @@ def start(process_instance_id, message_id, slice_id, gid, output_folder):
     public_parameters["H"] = H
     public_parameters["F"] = F
 
-    # keygen Bob
-    # we can do this with a for loop
     x.execute("SELECT * FROM authorities_generated_decription_keys WHERE process_instance=? AND authority_name=?",
               (str(process_instance_id), 'Auth-1'))
     result = x.fetchall()
@@ -139,7 +137,7 @@ def start(process_instance_id, message_id, slice_id, gid, output_folder):
     user_sk4 = user_sk4.encode()
     user_sk4 = bytesToObject(user_sk4, groupObj)
 
-    user_sk = {'GID': gid, 'keys': merge_dicts(user_sk1, user_sk2, user_sk3, user_sk4)}
+    user_sk = {'GID': sender_address, 'keys': merge_dicts(user_sk1, user_sk2, user_sk3, user_sk4)}
 
     # decrypt
     response = block_int.retrieve_MessageIPFSLink(message_id)
@@ -167,17 +165,19 @@ if __name__ == '__main__':
     process_instance_id = int(process_instance_id_env)
     parser = argparse.ArgumentParser(description="Reader details",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("-m", "--message_id", type=int, help="message id", default=0)
-    parser.add_argument("-s", "--slice_id", type=int, help="slice id", default=0)
-    parser.add_argument("-g", "--generate", action="store_true", help='Retrieval')
-    parser.add_argument("--gid", type=str, help="gid", default="bob")
+    parser.add_argument("-m", "--message_id", type=int, help="message id")
+    parser.add_argument("-s", "--slice_id", type=int, help="slice id")
+    parser.add_argument("-g", "--generate", action="store_true", help='Retrieval of public parameters')
+    parser.add_argument("-a", "--access", action="store_true", help='Access data')
+    parser.add_argument("-sa, --sender_name", type=str, help="global identifier")
     parser.add_argument("-o", "--output_folder", type=str, help="Path to the output folder")
     args = parser.parse_args()
     if args.generate:
         generate_public_parameters(process_instance_id)
-    else:
+    elif args.access:
         message_id = args.message_id
         slice_id = args.slice_id
-        gid = args.gid
+        sender_name = args.reader_name
+        sender_address = config(sender_name + '_ADDRESS')
         output_folder = args.output_folder
-        start(process_instance_id, message_id, slice_id, gid, output_folder)
+        start(process_instance_id, message_id, slice_id, sender_address, output_folder)
