@@ -18,6 +18,10 @@ while [ $# -gt 0 ]; do
       action="cipher"
       shift # past argument
       ;;
+    --generate_parameters)
+      action="generate_parameters"
+      shift # past argument
+      ;;
     -i|--input)
       input="$2"
       shift # past argument
@@ -59,7 +63,10 @@ if [ "$action" = "generate" ]; then
 elif [ "$action" = "cipher" ]; then
   python3 ../src/data_owner.py -c -i "$input" -p "$policies" -s "$sender_name"
   echo "✅ Data owner cipher done"
+elif [ "$action" = "generate_parameters" ]; then
+  python3 ../src/data_owner.py --generate_parameters
+  echo "✅ Data owner generate parameters done"
 else
-  echo "No action specified. Use -g to generate or -c to cipher."
+  echo "No action specified. Use -g to generate, -c to cipher, or --generate_parameters to generate parameters."
   exit 1
 fi
