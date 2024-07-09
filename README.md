@@ -10,7 +10,7 @@ In this repository you find several folders necessary to run the system.
 3. The *input_files* folder is the folder where to put the files to encrypt. You can use whatever folder you desire.
 4. The *json_files* folder contains the files that specify the roles of the actors involved in the process and the access policies. You can use whatever folder you desire.
 5. In the *sh_files* folder you find all the sh files to use MARTSIA. These files simplify the usage and hide several difficult steps, making MARTSIA easier for the user.
-6. The *src* folder contains the python scripts that are interpreted through the sh files. 
+6. The *src* folder contains the python scripts that are run through the sh files. 
 
 ### Literature and links
 For more information on MARTSIA, please consult our paper entitled "[MARTSIA: Enabling Data Confidentiality for Blockchain-based Process Execution](https://arxiv.org/abs/2303.17977)" (DOI: [10.1007/978-3-031-46587-1_4](https://doi.org/10.1007/978-3-031-46587-1_4); slides are available on [SlideShare](https://www.slideshare.net/slideshow/martsia-enabling-data-confidentiality-for-blockchainbased-process-execution/263105804)).
