@@ -31,6 +31,12 @@ if [ ! -f "$input" ]; then
   exit 1
 fi
 
+reader_lines=$(grep "ADDRESS" ../src/.env | grep -v "AUTHORITY\|CONTRACT\|SERVER\|CERTIFIER" | awk -F"_ADDRESS=" '{print $1}')
+
+echo "$reader_lines" | while IFS= read -r reader; do
+    python3 ../src/reader_public_key.py --reader "$reader"
+    echo "✅ Read public key of $reader"
+done
 # Run the Python script with the provided arguments
 python3 ../src/attribute_certifier.py -i "$input"
 echo "✅ Attribute certifier done"

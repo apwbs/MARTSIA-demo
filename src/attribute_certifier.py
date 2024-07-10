@@ -17,7 +17,6 @@ private_key = config('CERTIFIER_PRIVATEKEY')
 conn = sqlite3.connect('../databases/attribute_certifier/attribute_certifier.db')
 x = conn.cursor()
 
-
 def store_process_id_to_env(value):
     name = 'PROCESS_INSTANCE_ID'
     with open('../src/.env', 'r', encoding='utf-8') as file:
@@ -32,6 +31,19 @@ def store_process_id_to_env(value):
     with open('../src/.env', 'w', encoding='utf-8') as file:
         file.writelines(data)
 
+def retrieve_authorities():
+    authorities = []
+    count = 1
+    
+    while True:
+        name_key = f'AUTHORITY{count}_NAME'
+        name = config(name_key, default=None)
+        if not name:
+            break
+        authorities.append(name)
+        count += 1
+    
+    return authorities
 
 def generate_attributes(roles_file):
     now = datetime.now()
@@ -45,18 +57,12 @@ def generate_attributes(roles_file):
 
     roles = {key: [value] if not isinstance(value, list) else value for key, value in roles_data.items()}
 
-    auth1 = config('AUTHORITY1_NAME')
-    auth2 = config('AUTHORITY2_NAME')
-    auth3 = config('AUTHORITY3_NAME')
-    auth4 = config('AUTHORITY4_NAME')
+    authorities = retrieve_authorities()
 
     dict_users = {}
     for role, attributes in roles.items():
         address = config(f'{role}_ADDRESS')
-        dict_users[address] = [
-                                  f'{process_instance_id}@{auth1}', f'{process_instance_id}@{auth2}',
-                                  f'{process_instance_id}@{auth3}', f'{process_instance_id}@{auth4}'
-                              ] + attributes
+        dict_users[address] = [f'{process_instance_id}@{auth}' for auth in authorities] + attributes
 
     f = io.StringIO()
     dict_users_dumped = json.dumps(dict_users)
@@ -77,7 +83,6 @@ def generate_attributes(roles_file):
 
     store_process_id_to_env(str(process_instance_id))
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Certifier configuration')
     parser.add_argument('-i', '--input', type=str, help='Specify the path of the roles.json file')
@@ -86,3 +91,4 @@ if __name__ == "__main__":
         generate_attributes(args.input)
     else:
         parser.print_help()
+

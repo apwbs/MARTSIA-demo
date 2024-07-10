@@ -12,12 +12,31 @@ from decouple import config
 import argparse
 
 api = ipfshttpclient.connect('/ip4/127.0.0.1/tcp/5001')
-authorities_names = [
-    config('AUTHORITY1_NAME'),
-    config('AUTHORITY2_NAME'),
-    config('AUTHORITY3_NAME'),
-    config('AUTHORITY4_NAME')
-]
+
+# Function to dynamically retrieve authorities addresses and names
+def retrieve_authorities():
+    authorities_list = []
+    authorities_names = []
+    count = 1
+    
+    # Loop to retrieve all authority addresses and names until no more are found
+    while True:
+        address_key = f'AUTHORITY{count}_ADDRESS'
+        name_key = f'AUTHORITY{count}_NAME'
+        
+        # Check if the config key exists, if not, break the loop
+        if not config(address_key, default=None) or not config(name_key, default=None):
+            break
+        
+        # Append address and name to respective lists
+        authorities_list.append(config(address_key))
+        authorities_names.append(config(name_key))
+        
+        count += 1
+    return authorities_list, authorities_names
+
+authorities_list, authorities_names = retrieve_authorities()
+
 number_of_authorities = len(authorities_names)
 
 

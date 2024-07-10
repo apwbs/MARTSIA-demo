@@ -13,18 +13,29 @@ import argparse
 
 process_instance_id_env = config('PROCESS_INSTANCE_ID')
 
-authorities_list = [config('AUTHORITY1_ADDRESS'),
-                    config('AUTHORITY2_ADDRESS'),
-                    config('AUTHORITY3_ADDRESS'),
-                    config('AUTHORITY4_ADDRESS')]
+# Function to dynamically retrieve authorities addresses and names
+def retrieve_authorities():
+    authorities_list = []
+    authorities_names = []
+    count = 1
+    
+    # Loop to retrieve all authority addresses and names until no more are found
+    while True:
+        address_key = f'AUTHORITY{count}_ADDRESS'
+        name_key = f'AUTHORITY{count}_NAME'
+        
+        # Check if the config key exists, if not, break the loop
+        if not config(address_key, default=None) or not config(name_key, default=None):
+            break
+        
+        # Append address and name to respective lists
+        authorities_list.append(config(address_key))
+        authorities_names.append(config(name_key))
+        
+        count += 1
+    return authorities_list, authorities_names
 
-authorities_names = [
-    config('AUTHORITY1_NAME'),
-    config('AUTHORITY2_NAME'),
-    config('AUTHORITY3_NAME'),
-    config('AUTHORITY4_NAME')
-]
-
+authorities_list, authorities_names = retrieve_authorities()
 
 void_bytes = b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
 
@@ -189,3 +200,9 @@ def main():
 
 if __name__ == '__main__':
     main()
+    
+    
+    
+    
+    
+

@@ -1,4 +1,6 @@
 {
-    "Import_Declaration.pdf": "(MANUFACTURER@AUTH1 or (SUPPLIER@AUTH2 and ELECTRONICS@AUTH3))",
-    "Transport_Document.pdf": "(MANUFACTURER@AUTH1 or (SUPPLIER@AUTH2 and MECHANICS@AUTH4))"
+    "export_document_slice1.pdf": "(CUSTOMS@AUTH1 or ((SUPPLIER@AUTH3 and INTERNATIONAL@AUTH2) or MANUFACTURER@AUTH1 or (CARRIER@AUTH2 and INTERNATIONAL@AUTH3)))",
+    "export_document_slice2.pdf": "(CUSTOMS@AUTH1 or (SUPPLIER@AUTH4 and INTERNATIONAL@AUTH2))",
+    "export_document_slice3.pdf": "((SUPPLIER@AUTH4 and SUPPLIER@AUTH3 and INTERNATIONAL@AUTH2) or MANUFACTURER@AUTH1)",
+    "export_document_slice4.pdf": "(CUSTOMS@AUTH1 or ((SUPPLIER@AUTH3 and INTERNATIONAL@AUTH2) or MANUFACTURER@AUTH1))"
 }

@@ -11,10 +11,26 @@ from decouple import config
 import sqlite3
 import argparse
 
-authority1_address = config('AUTHORITY1_ADDRESS')
-authority2_address = config('AUTHORITY2_ADDRESS')
-authority3_address = config('AUTHORITY3_ADDRESS')
-authority4_address = config('AUTHORITY4_ADDRESS')
+# Function to dynamically retrieve authorities addresses and names
+def retrieve_authorities():
+    authorities_list = []
+    authorities_names = []
+    count = 1
+    # Loop to retrieve all authority addresses and names until no more are found
+    while True:
+        address_key = f'AUTHORITY{count}_ADDRESS'
+        name_key = f'AUTHORITY{count}_NAME'
+        
+        # Check if the config key exists, if not, break the loop
+        if not config(address_key, default=None) or not config(name_key, default=None):
+            break
+        # Append address and name to respective lists
+        authorities_list.append(config(address_key))
+        authorities_names.append(config(name_key))
+        count += 1
+    return authorities_list, authorities_names
+    
+authorities_list, authorities_names = retrieve_authorities()
 
 process_instance_id_env = config('PROCESS_INSTANCE_ID')
 
@@ -44,21 +60,10 @@ def generate_public_parameters(process_instance_id):
     check_authorities = []
     check_parameters = []
 
-    data = retrieve_data(authority1_address, process_instance_id)
-    check_authorities.append(data[0])
-    check_parameters.append(data[1])
-
-    data = retrieve_data(authority2_address, process_instance_id)
-    check_authorities.append(data[0])
-    check_parameters.append(data[1])
-
-    data = retrieve_data(authority3_address, process_instance_id)
-    check_authorities.append(data[0])
-    check_parameters.append(data[1])
-
-    data = retrieve_data(authority4_address, process_instance_id)
-    check_authorities.append(data[0])
-    check_parameters.append(data[1])
+    for e in authorities_list:
+        data = retrieve_data(e, process_instance_id)
+        check_authorities.append(data[0])
+        check_parameters.append(data[1])
 
     if len(set(check_authorities)) == 1 and len(set(check_parameters)) == 1:
         getfile = api.cat(check_parameters[0])
@@ -101,43 +106,27 @@ def actual_decryption(remaining, public_parameters, user_sk, output_folder):
     base64_to_file(decryptedFile, output_folder_path+"/"+remaining['FileName'])
 
 
-def start(process_instance_id, message_id, slice_id, sender_address, output_folder):
+
+def start(process_instance_id, message_id, slice_id, sender_address, output_folder, merged):
     response = retrieve_public_parameters(process_instance_id)
     public_parameters = bytesToObject(response, groupObj)
     H = lambda x: self.group.hash(x, G2)
     F = lambda x: self.group.hash(x, G2)
     public_parameters["H"] = H
     public_parameters["F"] = F
-
-    x.execute("SELECT * FROM authorities_generated_decription_keys WHERE process_instance=? AND authority_name=? AND reader_address=?",
-              (str(process_instance_id), 'Auth-1', sender_address))
-    result = x.fetchall()
-    user_sk1 = result[0][3]
-    user_sk1 = user_sk1.encode()
-    user_sk1 = bytesToObject(user_sk1, groupObj)
-
-    x.execute("SELECT * FROM authorities_generated_decription_keys WHERE process_instance=? AND authority_name=? AND reader_address=?",
-              (str(process_instance_id), 'Auth-2', sender_address))
-    result = x.fetchall()
-    user_sk2 = result[0][3]
-    user_sk2 = user_sk2.encode()
-    user_sk2 = bytesToObject(user_sk2, groupObj)
-
-    x.execute("SELECT * FROM authorities_generated_decription_keys WHERE process_instance=? AND authority_name=? AND reader_address=?",
-              (str(process_instance_id), 'Auth-3', sender_address))
-    result = x.fetchall()
-    user_sk3 = result[0][3]
-    user_sk3 = user_sk3.encode()
-    user_sk3 = bytesToObject(user_sk3, groupObj)
-
-    x.execute("SELECT * FROM authorities_generated_decription_keys WHERE process_instance=? AND authority_name=? AND reader_address=?",
-              (str(process_instance_id), 'Auth-4', sender_address))
-    result = x.fetchall()
-    user_sk4 = result[0][3]
-    user_sk4 = user_sk4.encode()
-    user_sk4 = bytesToObject(user_sk4, groupObj)
-
-    user_sk = {'GID': sender_address, 'keys': merge_dicts(user_sk1, user_sk2, user_sk3, user_sk4)}
+    for e in authorities_names:
+        f = e[0].upper() + e[1:].lower()
+        prefix = ''.join(filter(str.isalpha, f))
+        number = ''.join(filter(str.isdigit, f))
+        transformed_string = f"{prefix}-{number}"
+        x.execute("SELECT * FROM authorities_generated_decription_keys WHERE process_instance=? AND authority_name=? AND reader_address=?",
+                  (str(process_instance_id), transformed_string, sender_address))
+        result = x.fetchall()
+        user_sk1 = result[0][3]
+        user_sk1 = user_sk1.encode()
+        user_sk1 = bytesToObject(user_sk1, groupObj)
+        merged = merge_dicts(merged, user_sk1)
+    user_sk = {'GID': sender_address, 'keys': merged}
 
     # decrypt
     response = block_int.retrieve_MessageIPFSLink(message_id)
@@ -179,4 +168,5 @@ if __name__ == '__main__':
         slice_id = args.slice_id
         sender_address = config(args.reader_name + '_ADDRESS')
         output_folder = args.output_folder
-        start(process_instance_id, message_id, slice_id, sender_address, output_folder)
+        merged={}
+        start(process_instance_id, message_id, slice_id, sender_address, output_folder, merged)
