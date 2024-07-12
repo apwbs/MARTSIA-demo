@@ -12,6 +12,10 @@ In this repository you find several folders necessary to run the system.
 5. In the *sh_files* folder you find all the sh files to use MARTSIA. These files simplify the usage and hide several difficult steps, making MARTSIA easier for the user.
 6. The *src* folder contains the python scripts that are run through the sh files. 
 
+### Video presentation
+[![Example Video](https://github.com/yourusername/yourrepo/blob/main/thumbnail.png)]([https://drive.google.com/file/d/yourvideoid/view](https://drive.google.com/file/d/1PfLex1iC2HuenMaWkcr-jZeDZBCVQT3E/view))
+
+
 ### Literature and links
 For more information on MARTSIA, please consult our paper entitled "[MARTSIA: Enabling Data Confidentiality for Blockchain-based Process Execution](https://arxiv.org/abs/2303.17977)" (DOI: [10.1007/978-3-031-46587-1_4](https://doi.org/10.1007/978-3-031-46587-1_4); slides are available on [SlideShare](https://www.slideshare.net/slideshow/martsia-enabling-data-confidentiality-for-blockchainbased-process-execution/263105804)).
 
