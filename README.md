@@ -9,8 +9,9 @@ In this repository you find several folders necessary to run the system.
 2. In the *databases* folder you find the sql files to build the auxiliary relational tables we use in this prototypical implementation of our system to store temporary data (yellow pages, seeds, RSA private keys, etc.).
 3. The *input_files* folder is the folder where to put the files to encrypt. You can use whatever folder you desire.
 4. The *json_files* folder contains the files that specify the roles of the actors involved in the process and the access policies. You can use whatever folder you desire.
-5. In the *sh_files* folder you find all the sh files to use MARTSIA. These files simplify the usage and hide several difficult steps, making MARTSIA easier for the user.
-6. The *src* folder contains the python scripts that are run through the sh files. 
+5. The *output_files* folder is the folder where decrypted files are saved. You can use whatever folder you desire.
+6. In the *sh_files* folder you find all the sh files to use MARTSIA. These files simplify the usage and hide several difficult steps, making MARTSIA easier for the user.
+7. The *src* folder contains the python scripts that are run through the sh files. 
 
 ### Video presentation
 [![Video](https://img.youtube.com/vi/9-iD56Fru0w/maxresdefault.jpg)](https://www.youtube.com/watch?v=9-iD56Fru0w)
