@@ -53,8 +53,8 @@ if [ -z "$slice_id" ]; then
   exit 1
 fi
 
-if [ -n "$output_folder" ] && [ ! -d "$output_folder" ]; then
-  echo "Output folder '$output_folder' does not exist"
+if [ -z "$output_folder" ] && [ ! -d "$output_folder" ]; then
+  echo "You need to specify a directory for the --output_folder option!"
   exit 1
 fi
 
@@ -86,7 +86,7 @@ fi
 
   python3 ../src/reader.py --access --message_id "$message_id" --slice_id "$slice_id" \
   --reader_name "$requester_name" --output_folder "$output_folder"
-  if [ $? -ne 0 ]; then
+if [ $? -ne 0 ]; then
     echo "Error: python3 command failed."
 else
     echo "✅ Data owner access done"

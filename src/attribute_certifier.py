@@ -27,14 +27,12 @@ def store_process_id_to_env(value):
             break
     line = "\n" + name + "=" + value + "\n"
     data.append(line)
-
     with open('../src/.env', 'w', encoding='utf-8') as file:
         file.writelines(data)
 
 def retrieve_authorities():
     authorities = []
     count = 1
-    
     while True:
         name_key = f'AUTHORITY{count}_NAME'
         name = config(name_key, default=None)
@@ -42,7 +40,6 @@ def retrieve_authorities():
             break
         authorities.append(name)
         count += 1
-    
     return authorities
 
 def generate_attributes(roles_file):
@@ -51,36 +48,26 @@ def generate_attributes(roles_file):
     random.seed(now)
     process_instance_id = random.randint(1, 2 ** 64)
     print(f'process instance id: {process_instance_id}')
-
     with open(roles_file, 'r') as file:
         roles_data = json.load(file)
-
     roles = {key: [value] if not isinstance(value, list) else value for key, value in roles_data.items()}
-
     authorities = retrieve_authorities()
-
     dict_users = {}
     for role, attributes in roles.items():
         address = config(f'{role}_ADDRESS')
         dict_users[address] = [f'{process_instance_id}@{auth}' for auth in authorities] + attributes
-
     f = io.StringIO()
     dict_users_dumped = json.dumps(dict_users)
     f.write('"process_instance_id": ' + str(process_instance_id) + '####')
     f.write(dict_users_dumped)
     f.seek(0)
-
     file_to_str = f.read()
-
     hash_file = api.add_json(file_to_str)
     print(f'ipfs hash: {hash_file}')
-
     block_int.send_users_attributes(attribute_certifier_address, private_key, process_instance_id, hash_file)
-
     x.execute("INSERT OR IGNORE INTO user_attributes VALUES (?,?,?)",
               (str(process_instance_id), hash_file, file_to_str))
     conn.commit()
-
     store_process_id_to_env(str(process_instance_id))
 
 if __name__ == "__main__":

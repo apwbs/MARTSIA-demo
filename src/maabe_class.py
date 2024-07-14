@@ -63,7 +63,6 @@ class MaabeRW15(ABEncMultiAuth):
         """
         _, auth, _ = self.unpack_attribute(attribute)
         assert sk['name'] == auth, "Attribute %s does not belong to authority %s" % (attribute, sk['name'])
-
         t = self.group.random()
         H = lambda x: self.group.hash(x, G2)
         F = lambda x: self.group.hash(x, G2)
@@ -96,13 +95,10 @@ class MaabeRW15(ABEncMultiAuth):
         """
         s = self.group.random()  # secret to be shared
         w = self.group.init(ZR, 0)  # 0 to be shared
-
         policy = self.util.createPolicy(policy_str)
         attribute_list = self.util.getAttributeList(policy)
-
         secret_shares = self.util.calculateSharesDict(s, policy)  # These are correctly set to be exponents in Z_p
         zero_shares = self.util.calculateSharesDict(w, policy)
-
         C0 = message * (gp['egg'] ** s)
         C1, C2, C3, C4 = {}, {}, {}, {}
         F = lambda x: self.group.hash(x, G2)
@@ -128,10 +124,8 @@ class MaabeRW15(ABEncMultiAuth):
         policy = self.util.createPolicy(ct['policy'])
         coefficients = self.util.getCoefficients(policy)
         pruned_list = self.util.prune(policy, sk['keys'].keys())
-
         if not pruned_list:
             raise Exception("You don't have the required attributes for decryption!")
-
         B = self.group.init(GT, 1)
         for i in range(len(pruned_list)):
             x = pruned_list[i].getAttribute()  # without the underscore

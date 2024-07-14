@@ -18,20 +18,16 @@ def retrieve_authorities():
     authorities_list = []
     authorities_names = []
     count = 1
-    
     # Loop to retrieve all authority addresses and names until no more are found
     while True:
         address_key = f'AUTHORITY{count}_ADDRESS'
         name_key = f'AUTHORITY{count}_NAME'
-        
         # Check if the config key exists, if not, break the loop
         if not config(address_key, default=None) or not config(name_key, default=None):
             break
-        
         # Append address and name to respective lists
         authorities_list.append(config(address_key))
         authorities_names.append(config(name_key))
-        
         count += 1
     return authorities_list, authorities_names
 
@@ -39,11 +35,9 @@ authorities_list, authorities_names = retrieve_authorities()
 
 number_of_authorities = len(authorities_names)
 
-
 """
 function triggered by the client handler. Here starts the ciphering of the message with the policy.
 """
-
 class AuthorityServer:
     def __init__(self, authority_number):
         self.authority_number = authority_number
@@ -55,7 +49,6 @@ class AuthorityServer:
         # Connection to SQLite3 authority database
         connection = sqlite3.connect('../databases/authority'+str(self.authority_number)+'/authority'+str(self.authority_number)+'.db')
         x = connection.cursor()
-
         now = datetime.now()
         now = int(now.strftime("%Y%m%d%H%M%S%f"))
         random.seed(now)
@@ -69,7 +62,6 @@ class AuthorityServer:
         # Connection to SQLite3 authority database
         connection = sqlite3.connect('../databases/authority'+str(self.authority_number)+'/authority'+str(self.authority_number)+'.db')
         x = connection.cursor()
-
         x.execute("SELECT * FROM handshake_numbers WHERE process_instance=? AND reader_address=?",
                 (process_instance_id, reader_address))
         result = x.fetchall()
@@ -86,16 +78,12 @@ class AuthorityServer:
             print("Signature valid:", hash == hashFromSignature)
             return hash == hashFromSignature
 
-
     """
     function that handles the requests from the clients. There is only one request possible, namely the 
     ciphering of a message with a policy.
     """
-
-
     def handle_client(self, conn, addr):
         print(f"[NEW CONNECTION] {addr} connected.")
-
         connected = True
         while connected:
             msg_length = conn.recv(int(HEADER)).decode(FORMAT)
@@ -114,13 +102,11 @@ class AuthorityServer:
                     if self.check_handshake(message[2], message[3], message[4]):
                         user_sk1 = self.generate_key_auth(message[1], message[2], message[3])
                         conn.send(b'Here is my partial key: ' + user_sk1)
-
         conn.close()
 
     """
     main function starting the server. It listens on a port and waits for a request from a client
     """
-
     def start(self):
         bindsocket.listen()
         print(f"[LISTENING] Server is listening on {SERVER}")
@@ -131,12 +117,10 @@ class AuthorityServer:
             thread.start()
             print(f"[ACTIVE CONNECTIONS] {threading.active_count() - 1}")
 
-
 print("[STARTING] server is starting...")
 parser = argparse.ArgumentParser(description='Authority')
 parser.add_argument('-a', '--authority', type=int, help='Authority number')
 args = parser.parse_args()
-
 
 if args.authority < 1 or args.authority > number_of_authorities:
     print("Invalid authority number")
@@ -161,8 +145,6 @@ context.load_verify_locations(cafile=client_certs)
 bindsocket = socket.socket()
 bindsocket.bind(ADDR)
 bindsocket.listen(5)
-
-
 authority_number = args.authority
 authority_server = AuthorityServer(args.authority)
 authority_server.start()

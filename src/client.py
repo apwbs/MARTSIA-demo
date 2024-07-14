@@ -9,32 +9,25 @@ import argparse
 connection = sqlite3.connect('../databases/reader/reader.db')
 x = connection.cursor()
 
-
 def sign_number(authority_invoked):
     x.execute("SELECT * FROM handshake_number WHERE process_instance=? AND authority_name=? AND reader_address=?",
               (str(process_instance_id), authority_invoked, reader_address))
     result = x.fetchall()
     number_to_sign = result[0][3]
-
     x.execute("SELECT * FROM rsa_private_key WHERE reader_address=?", (reader_address,))
     result = x.fetchall()
     private_key = result[0]
-
     private_key_n = int(private_key[1])
     private_key_d = int(private_key[2])
-
     msg = bytes(str(number_to_sign), 'utf-8')
     hash = int.from_bytes(sha512(msg).digest(), byteorder='big')
     signature = pow(hash, private_key_d, private_key_n)
     # print("Signature:", hex(signature))
     return signature
 
-
 """
-function to handle the sending and receiving messages.
+functions to handle the sending and receiving messages.
 """
-
-
 def receive_message():
     message = ""
     while True:
@@ -47,7 +40,6 @@ def receive_message():
             return message
         elif message.startswith("Here is my partial key:"):
             return message
-
 
 def send(msg):
     message = msg.encode(FORMAT)
@@ -71,10 +63,8 @@ def send(msg):
                   (str(process_instance_id), reader_address, authority, receive[23:]))
         connection.commit()
 
-
 process_instance_id_env = config('PROCESS_INSTANCE_ID')
 process_instance_id = int(process_instance_id_env)
-
 HEADER = config('HEADER')
 FORMAT = 'utf-8'
 server_sni_hostname = config('SERVER_SNI_HOSTNAME')
@@ -86,7 +76,6 @@ client_key = '../Keys/client.key'
 """
 creation and connection of the secure channel using SSL protocol
 """
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Client request details",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -95,18 +84,13 @@ if __name__ == '__main__':
     parser.add_argument('-hs', '--handshake', action='store_true', help='Handshake request')
     parser.add_argument('-gk', '--generate_key', action='store_true', help='Generate key request')
     args = parser.parse_args()
-
     PORT = 5060 + args.authority - 1
     SERVER = config('SERVER_ADDRESS')
     ADDR = (SERVER, PORT)
-
     sender_address = config(args.requester_name + '_ADDRESS')
-
     gid = sender_address
     reader_address = sender_address
-
     authority = 'Auth-' + str(args.authority)
-
     context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH, cafile=server_cert)
     context.load_cert_chain(certfile=client_cert, keyfile=client_key)
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -114,7 +98,6 @@ if __name__ == '__main__':
     conn.connect(ADDR)
     if args.handshake:
         send(authority + " - Start handshake§" + str(process_instance_id) + '§' + reader_address)
-
     elif args.generate_key:
         signature_sending = sign_number(authority)
         send(

@@ -33,14 +33,20 @@ while [ $# -gt 0 ]; do
 done
 
 # Check if input folder exists
-if [ -n "$input" ] && [ ! -d "$input" ]; then
-  echo "Input folder '$input' does not exist"
+if [ -z "$input" ] && [ ! -d "$input" ]; then
+  echo "You need to provide a directory for the input option: --input"
   exit 1
 fi
 
 # Check if policies file exists
-if [ -n "$policies" ] && [ ! -f "$policies" ]; then
-  echo "Policies file '$policies' does not exist"
+if [ -z "$policies" ] && [ ! -f "$policies" ]; then
+  echo "You need to provide a file for the policies option: --policies"
+  exit 1
+fi
+
+# Check if sender_name argument is provided
+if [ -z "$sender_name" ]; then
+  echo "You need to provide a value for the sender_name parameter: --sender_name"
   exit 1
 fi
 

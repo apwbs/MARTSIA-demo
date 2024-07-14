@@ -18,20 +18,16 @@ def retrieve_authorities():
     authorities_list = []
     authorities_names = []
     count = 1
-    
     # Loop to retrieve all authority addresses and names until no more are found
     while True:
         address_key = f'AUTHORITY{count}_ADDRESS'
         name_key = f'AUTHORITY{count}_NAME'
-        
         # Check if the config key exists, if not, break the loop
         if not config(address_key, default=None) or not config(name_key, default=None):
             break
-        
         # Append address and name to respective lists
         authorities_list.append(config(address_key))
         authorities_names.append(config(name_key))
-        
         count += 1
     return authorities_list, authorities_names
 
@@ -55,13 +51,10 @@ class Authority:
             f.write('name: ' + str(authorities_names[i]) + '\n')
             f.write('address: ' + addr + '\n\n')
         f.seek(0)
-
         file_to_str = f.read()
         hash_file = api.add_json(file_to_str)
         print(f'ipfs hash: {hash_file}')
-
         block_int.send_authority_names(self.authority_address, self.__authority_private_key__, process_instance_id, hash_file)
-
         self.__x__.execute("INSERT OR IGNORE INTO authority_names VALUES (?,?,?)", (str(process_instance_id), hash_file, file_to_str))
         self.__conn__.commit()
 
@@ -69,28 +62,21 @@ class Authority:
         g1_1 = groupObj.random(G1)
         g2_1 = groupObj.random(G2)
         (h1_1, h2_1) = mpc_setup.commit(groupObj, g1_1, g2_1)
-
         block_int.sendHashedElements(self.authority_address, self.__authority_private_key__, process_instance_id, (h1_1, h2_1))
-
         self.__x__.execute("INSERT OR IGNORE INTO h_values VALUES (?,?,?)", (str(process_instance_id), h1_1, h2_1))
         self.__conn__.commit()
-
         g1_1_bytes = groupObj.serialize(g1_1)
         g2_1_bytes = groupObj.serialize(g2_1)
-
         self.__x__.execute("INSERT OR IGNORE INTO g_values VALUES (?,?,?)", (str(process_instance_id), g1_1_bytes, g2_1_bytes))
         self.__conn__.commit()
-
 
     def initial_parameters(self, process_instance_id):
         self.__x__.execute("SELECT * FROM g_values WHERE process_instance=?", (str(process_instance_id),))
         result = self.__x__.fetchall()
         g1_1_bytes = result[0][1]
         g2_1_bytes = result[0][2]
-
         # if we want to save gas, we can put the values in an IPFS file and store its link instead of the values in plain
         block_int.sendElements(self.authority_address, self.__authority_private_key__, process_instance_id, (g1_1_bytes, g2_1_bytes))
-
 
     def generate_public_parameters(self, groupObj, maabe, api, process_instance_id):
         #self.__x__.execute("SELECT * FROM h_values WHERE process_instance=?", (str(process_instance_id),))
@@ -99,7 +85,6 @@ class Authority:
         hashes2 = []
         com1 = []
         com2 = []
-
         count = 0
         for auth in authorities_list:
             g1g2_hashed = block_int.retrieveHashedElements(authorities_list[count], process_instance_id)
@@ -112,33 +97,25 @@ class Authority:
             hashes2.append(g1g2_hashed[1])
             com1.append(groupObj.deserialize(g1g2[0]))
             com2.append(groupObj.deserialize(g1g2[1]))
-
             count += 1
-
         (value1, value2) = mpc_setup.generateParameters(groupObj, hashes1, hashes2, com1, com2)
-
         # setup
         public_parameters = maabe.setup(value1, value2)
         public_parameters_reduced = dict(list(public_parameters.items())[0:3])
         pp_reduced = objectToBytes(public_parameters_reduced, groupObj)
-
         file_to_str = pp_reduced.decode('utf-8')
         hash_file = api.add_json(file_to_str)
         print(f'ipfs hash: {hash_file}')
-
         self.__x__.execute("INSERT OR IGNORE INTO public_parameters VALUES (?,?,?)", (str(process_instance_id), hash_file, file_to_str))
         self.__conn__.commit()
-
         block_int.send_parameters_link(self.authority_address, self.__authority_private_key__, process_instance_id, hash_file)
         return True
-
 
     def retrieve_public_parameters(self, process_instance_id):
         self.__x__.execute("SELECT * FROM public_parameters WHERE process_instance=?", (str(process_instance_id),))
         result = self.__x__.fetchall()
         public_parameters = result[0][2].encode()
         return public_parameters
-
 
     def generate_pk_sk(self, groupObj, maabe, api, process_instance_id):
         response = self.retrieve_public_parameters(process_instance_id)
@@ -147,31 +124,24 @@ class Authority:
         F = lambda x: group.hash(x, G2)
         public_parameters["H"] = H
         public_parameters["F"] = F
-
         # authsetup 2AA
         (pk1, sk1) = maabe.authsetup(public_parameters, authorities_names[self.authority_number -1])
         pk1_bytes = objectToBytes(pk1, groupObj)
         sk1_bytes = objectToBytes(sk1, groupObj)
-
         file_to_str = pk1_bytes.decode('utf-8')
         hash_file = api.add_json(file_to_str)
         print(f'ipfs hash: {hash_file}')
-
         self.__x__.execute("INSERT OR IGNORE INTO private_keys VALUES (?,?)", (str(process_instance_id), sk1_bytes))
         self.__conn__.commit()
-
         self.__x__.execute("INSERT OR IGNORE INTO public_keys VALUES (?,?,?)", (str(process_instance_id), hash_file, pk1_bytes))
         self.__conn__.commit()
-
         block_int.send_publicKey_link(self.authority_address, self.__authority_private_key__, process_instance_id, hash_file)
-
 
 def main():
     groupObj = PairingGroup('SS512')
     maabe = MaabeRW15(groupObj)
     api = ipfshttpclient.connect('/ip4/127.0.0.1/tcp/5001')
     process_instance_id = int(process_instance_id_env)
-
     parser = argparse.ArgumentParser(description='Authority')
     parser.add_argument('-a', '--authority', type=int, help='Authority number')
     args = parser.parse_args()
@@ -197,11 +167,8 @@ def main():
         print("Phase 0.5")
         authority.generate_pk_sk(groupObj, maabe, api, process_instance_id)
 
-
 if __name__ == '__main__':
-    main()
-    
-    
+    main()   
     
     
     

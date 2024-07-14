@@ -1,11 +1,9 @@
 import hashlib
 
-
 def commit(group, g1, g2):
     h1 = hashlib.sha256(group.serialize(g1)).hexdigest()
     h2 = hashlib.sha256(group.serialize(g2)).hexdigest()
     return h1, h2
-
 
 def generateParameters(group, hashes1, hashes2, com1, com2):
     for i in range(len(hashes1)):

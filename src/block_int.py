@@ -5,7 +5,6 @@ import base64
 
 # from web3.middleware import geth_poa_middleware  # Avalanche
 
-
 # Goerli
 # web3 = Web3(Web3.HTTPProvider("https://goerli.infura.io/v3/059e54a94bca48d893f1b2d45470c002"))
 
@@ -32,14 +31,11 @@ verbose = False
 def get_nonce(ETH_address):
     return web3.eth.get_transaction_count(ETH_address)
 
-
 def activate_contract(attribute_certifier_address, private_key):
     with open(compiled_contract_path) as file:
         contract_json = json.load(file)
         contract_abi = contract_json['abi']
-
     contract = web3.eth.contract(address=deployed_contract_address, abi=contract_abi)
-
     tx = {
         'nonce': get_nonce(attribute_certifier_address),
         'gasPrice': web3.eth.gas_price,
@@ -48,12 +44,10 @@ def activate_contract(attribute_certifier_address, private_key):
     message = contract.functions.updateMajorityCount().buildTransaction(tx)
     signed_transaction = web3.eth.account.sign_transaction(message, private_key)
     transaction_hash = __send_txt__(signed_transaction.rawTransaction)
-
     print(f'tx_hash: {web3.toHex(transaction_hash)}')
     tx_receipt = web3.eth.wait_for_transaction_receipt(transaction_hash, timeout=600)
     if verbose:
         print(tx_receipt)
-
 
 def __send_txt__(signed_transaction_type):
     try:
@@ -66,14 +60,11 @@ def __send_txt__(signed_transaction_type):
         else:
             raise Exception("Transaction failed")
 
-
 def send_authority_names(authority_address, private_key, process_instance_id, hash_file):
     with open(compiled_contract_path) as file:
         contract_json = json.load(file)
         contract_abi = contract_json['abi']
-
     contract = web3.eth.contract(address=deployed_contract_address, abi=contract_abi)
-
     tx = {
         'nonce': get_nonce(authority_address),
         'gasPrice': web3.eth.gas_price,
@@ -90,27 +81,21 @@ def send_authority_names(authority_address, private_key, process_instance_id, ha
     if verbose:
         print(tx_receipt)
 
-
 def retrieve_authority_names(authority_address, process_instance_id):
     with open(compiled_contract_path) as file:
         contract_json = json.load(file)
         contract_abi = contract_json['abi']
-
     contract = web3.eth.contract(address=deployed_contract_address, abi=contract_abi)
-
     message = contract.functions.getAuthoritiesNames(authority_address, int(process_instance_id)).call()
     message_bytes = base64.b64decode(message)
     message = message_bytes.decode('ascii')
     return message
 
-
 def sendHashedElements(authority_address, private_key, process_instance_id, elements):
     with open(compiled_contract_path) as file:
         contract_json = json.load(file)
         contract_abi = contract_json['abi']
-
     contract = web3.eth.contract(address=deployed_contract_address, abi=contract_abi)
-
     tx = {
         'nonce': get_nonce(authority_address),
         'gasPrice': web3.eth.gas_price,
@@ -127,27 +112,21 @@ def sendHashedElements(authority_address, private_key, process_instance_id, elem
     if verbose:
         print(tx_receipt)
 
-
 def retrieveHashedElements(eth_address, process_instance_id):
     with open(compiled_contract_path) as file:
         contract_json = json.load(file)
         contract_abi = contract_json['abi']
-
     contract = web3.eth.contract(address=deployed_contract_address, abi=contract_abi)
-
     message = contract.functions.getElementHashed(eth_address, process_instance_id).call()
     hashedg11 = message[0].decode('utf-8')
     hashedg21 = message[1].decode('utf-8')
     return hashedg11, hashedg21
 
-
 def sendElements(authority_address, private_key, process_instance_id, elements):
     with open(compiled_contract_path) as file:
         contract_json = json.load(file)
         contract_abi = contract_json['abi']
-
     contract = web3.eth.contract(address=deployed_contract_address, abi=contract_abi)
-
     tx = {
         'nonce': get_nonce(authority_address),
         'gasPrice': web3.eth.gas_price,
@@ -166,14 +145,11 @@ def sendElements(authority_address, private_key, process_instance_id, elements):
     if verbose:
         print(tx_receipt)
 
-
 def retrieveElements(eth_address, process_instance_id):
     with open(compiled_contract_path) as file:
         contract_json = json.load(file)
         contract_abi = contract_json['abi']
-
     contract = web3.eth.contract(address=deployed_contract_address, abi=contract_abi)
-
     message = contract.functions.getElement(eth_address, process_instance_id).call()
     g11 = message[0] + message[1]
     g11 = g11[:90]
@@ -181,14 +157,11 @@ def retrieveElements(eth_address, process_instance_id):
     g21 = g21[:90]
     return g11, g21
 
-
 def send_parameters_link(authority_address, private_key, process_instance_id, hash_file):
     with open(compiled_contract_path) as file:
         contract_json = json.load(file)
         contract_abi = contract_json['abi']
-
     contract = web3.eth.contract(address=deployed_contract_address, abi=contract_abi)
-
     tx = {
         'nonce': get_nonce(authority_address),
         'gasPrice': web3.eth.gas_price,
@@ -205,27 +178,21 @@ def send_parameters_link(authority_address, private_key, process_instance_id, ha
     if verbose:
         print(tx_receipt)
 
-
 def retrieve_parameters_link(authority_address, process_instance_id):
     with open(compiled_contract_path) as file:
         contract_json = json.load(file)
         contract_abi = contract_json['abi']
-
     contract = web3.eth.contract(address=deployed_contract_address, abi=contract_abi)
-
     message = contract.functions.getPublicParameters(authority_address, int(process_instance_id)).call()
     message_bytes = base64.b64decode(message)
     message = message_bytes.decode('ascii')
     return message
 
-
 def send_publicKey_link(authority_address, private_key, process_instance_id, hash_file):
     with open(compiled_contract_path) as file:
         contract_json = json.load(file)
         contract_abi = contract_json['abi']
-
     contract = web3.eth.contract(address=deployed_contract_address, abi=contract_abi)
-
     tx = {
         'nonce': get_nonce(authority_address),
         'gasPrice': web3.eth.gas_price,
@@ -242,27 +209,21 @@ def send_publicKey_link(authority_address, private_key, process_instance_id, has
     if verbose:
         print(tx_receipt)
 
-
 def retrieve_publicKey_link(eth_address, process_instance_id):
     with open(compiled_contract_path) as file:
         contract_json = json.load(file)
         contract_abi = contract_json['abi']
-
     contract = web3.eth.contract(address=deployed_contract_address, abi=contract_abi)
-
     message = contract.functions.getPublicKey(eth_address, int(process_instance_id)).call()
     message_bytes = base64.b64decode(message)
     message1 = message_bytes.decode('ascii')
     return message1
 
-
 def send_MessageIPFSLink(dataOwner_address, private_key, message_id, hash_file):
     with open(compiled_contract_path) as file:
         contract_json = json.load(file)
         contract_abi = contract_json['abi']
-
     contract = web3.eth.contract(address=deployed_contract_address, abi=contract_abi)
-
     tx = {
         'nonce': get_nonce(dataOwner_address),
         'gasPrice': web3.eth.gas_price,
@@ -278,28 +239,22 @@ def send_MessageIPFSLink(dataOwner_address, private_key, message_id, hash_file):
     if verbose:
         print(tx_receipt)
 
-
 def retrieve_MessageIPFSLink(message_id):
     with open(compiled_contract_path) as file:
         contract_json = json.load(file)
         contract_abi = contract_json['abi']
-
     contract = web3.eth.contract(address=deployed_contract_address, abi=contract_abi)
-
     message = contract.functions.getIPFSLink(int(message_id)).call()
     sender = message[0]
     message_bytes = base64.b64decode(message[1])
     ipfs_link = message_bytes.decode('ascii')
     return ipfs_link, sender
 
-
 def send_users_attributes(attribute_certifier_address, private_key, process_instance_id, hash_file):
     with open(compiled_contract_path) as file:
         contract_json = json.load(file)
         contract_abi = contract_json['abi']
-
     contract = web3.eth.contract(address=deployed_contract_address, abi=contract_abi)
-
     tx = {
         'nonce': get_nonce(attribute_certifier_address),
         'gasPrice': web3.eth.gas_price,
@@ -317,27 +272,21 @@ def send_users_attributes(attribute_certifier_address, private_key, process_inst
     if verbose:
         print(tx_receipt)
 
-
 def retrieve_users_attributes(process_instance_id):
     with open(compiled_contract_path) as file:
         contract_json = json.load(file)
         contract_abi = contract_json['abi']
-
     contract = web3.eth.contract(address=deployed_contract_address, abi=contract_abi)
-
     message = contract.functions.getUserAttributes(int(process_instance_id)).call()
     message_bytes = base64.b64decode(message)
     message = message_bytes.decode('ascii')
     return message
 
-
 def send_publicKey_readers(reader_address, private_key, hash_file):
     with open(compiled_contract_path) as file:
         contract_json = json.load(file)
         contract_abi = contract_json['abi']
-
     contract = web3.eth.contract(address=deployed_contract_address, abi=contract_abi)
-
     tx = {
         'nonce': get_nonce(reader_address),
         'gasPrice': web3.eth.gas_price,
@@ -353,14 +302,11 @@ def send_publicKey_readers(reader_address, private_key, hash_file):
     if verbose:
         print(tx_receipt)
 
-
 def retrieve_publicKey_readers(reader_address):
     with open(compiled_contract_path) as file:
         contract_json = json.load(file)
         contract_abi = contract_json['abi']
-
     contract = web3.eth.contract(address=deployed_contract_address, abi=contract_abi)
-
     message = contract.functions.getPublicKeyReaders(reader_address).call()
     message_bytes = base64.b64decode(message)
     message1 = message_bytes.decode('ascii')
