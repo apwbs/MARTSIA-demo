@@ -1,7 +1,7 @@
 # MARTSIA-demo
 
 ## Wiki
-Check out the [Wiki](https://github.com/apwbs/MARTSIA-demo/wiki) for a detailed documentation and step-by-step tutorial to run the system.
+Check out the [Wiki](https://github.com/apwbs/MARTSIA-demo/wiki) for a detailed documentation and step-by-step tutorial to run the system locally.
 
 ## This repository
 In this repository you find several folders necessary to run the system. 
