@@ -48,11 +48,6 @@ if [ -z "$message_id" ]; then
   exit 1
 fi
 
-if [ -z "$slice_id" ]; then
-  echo "You need to specify --slice_id!"
-  exit 1
-fi
-
 if [ -z "$output_folder" ] && [ ! -d "$output_folder" ]; then
   echo "You need to specify a directory for the --output_folder option!"
   exit 1
@@ -73,22 +68,34 @@ done
 python3 ../src/reader.py --generate_parameters
 echo "✅ Data owner generate parameters done"
 
-matching_lines=$(grep "$slice_id" "../src/.cache")
-matching_lines2=$(grep "$message_id" "../src/.cache")
-
-if [ $(echo "$matching_lines" | wc -l) -eq 1 ]; then
-  slice_id=$(echo "$matching_lines" | grep -oP '\b\d+\b')
+if [ ${#message_id} -lt 10 ] || ! echo "$message_id" | grep -qE '^[0-9]+$'; then
+    matching_lines=$(grep "$message_id" "../src/.cache")
+    if [ $(echo "$matching_lines" | wc -l) -eq 1 ]; then
+      message_id=$(echo "$matching_lines" | grep -oP '\b\d+\b')
+    fi
 fi
 
-if [ $(echo "$matching_lines2" | wc -l) -eq 1 ]; then
-  message_id=$(echo "$matching_lines2" | grep -oP '\b\d+\b')
-fi
-
+if [ -z "$slice_id" ]; then
+  #Check to see if the last cipher has multiple slices and the slice was not specified in input
+  if grep -q "| slice1" "../src/.cache"; then
+    echo "You need to specify the slice_id (--slice_id)!"
+    exit 1
+  fi
+  python3 ../src/reader.py --access --message_id "$message_id" \
+  --reader_name "$requester_name" --output_folder "$output_folder"
+else
+  if [ ${#slice_id} -lt 10 ] || ! echo "$slice_id" | grep -qE '^[0-9]+$'; then
+    matching_lines=$(grep "$slice_id" "../src/.cache")
+    if [ $(echo "$matching_lines" | wc -l) -eq 1 ]; then
+      slice_id=$(echo "$matching_lines" | grep -oP '\b\d+\b')
+    fi
+  fi
   python3 ../src/reader.py --access --message_id "$message_id" --slice_id "$slice_id" \
   --reader_name "$requester_name" --output_folder "$output_folder"
+fi
+
 if [ $? -ne 0 ]; then
-    echo "Error: python3 command failed."
+    echo "Error: python3 command failed!"
 else
     echo "✅ Data owner access done"
 fi
-
