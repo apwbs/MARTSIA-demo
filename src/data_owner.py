@@ -15,14 +15,14 @@ import argparse
 from authorities_info import authorities_names_and_addresses
 
 def retrieve_data(authority_address, process_instance_id):
-    """Retrieve names, public parameters, and public keys from the specified Authority."""
+    """Retrieve names, public parameters, and public keys from the specified Authority"""
     authorities = block_int.retrieve_authority_names(authority_address, process_instance_id)
     public_parameters = block_int.retrieve_parameters_link(authority_address, process_instance_id)
     public_key = block_int.retrieve_publicKey_link(authority_address, process_instance_id)
     return authorities, public_parameters, public_key
 
 def generate_pp_pk(process_instance_id):
-    """Generate public parameters and public keys for the Authorities."""
+    """Generate public parameters and public keys for the Authorities"""
     check_authorities = []
     check_parameters = []
     for authority_name, authority_address in authorities_names_and_addresses:
@@ -42,7 +42,7 @@ def generate_pp_pk(process_instance_id):
         conn.commit()
 
 def retrieve_public_parameters(process_instance_id):
-    """Retrieve public parameters for the specified process instance."""
+    """Retrieve public parameters for the specified process instance"""
     x.execute("SELECT * FROM public_parameters WHERE process_instance=?", (str(process_instance_id),))
     result = x.fetchall()
     if not result:
@@ -51,7 +51,7 @@ def retrieve_public_parameters(process_instance_id):
     return public_parameters
 
 def file_to_base64(file_path):
-    """Encode a file to Base64 format."""
+    """Encode a file to Base64 format"""
     try:
         with open(file_path, 'rb') as file:
             encoded = base64.b64encode(file.read()).decode('utf-8')
@@ -61,7 +61,7 @@ def file_to_base64(file_path):
         return None
 
 def cipher_data(groupObj, maabe, api, process_instance_id, sender_name, input_files_path, policies_path):
-    """Encrypt data using MA-ABE and generate a corresponding IPFS hash."""
+    """Encrypt data using MA-ABE and generate a corresponding IPFS hash"""
     sender_address = config(sender_name + '_ADDRESS')
     sender_private_key = config(sender_name + '_PRIVATEKEY')
     generate_pp_pk(process_instance_id)
