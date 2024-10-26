@@ -10,10 +10,12 @@ class MaabeRW15(ABEncMultiAuth):
     Rouselakis - Waters
     """
 
+
     def __init__(self, group, verbose=False):
         ABEncMultiAuth.__init__(self)
         self.group = group
         self.util = SecretUtil(group, verbose)
+
 
     def setup(self, g1, g2):
         egg = pair(g1, g2)
@@ -21,6 +23,7 @@ class MaabeRW15(ABEncMultiAuth):
         F = lambda x: self.group.hash(x, G2)
         gp = {'g1': g1, 'g2': g2, 'egg': egg, 'H': H, 'F': F}
         return gp
+
 
     def unpack_attribute(self, attribute):
         """
@@ -38,6 +41,7 @@ class MaabeRW15(ABEncMultiAuth):
         assert len(parts) > 1, "No @ char in [attribute@authority] name"
         return parts[0], parts[1], None if len(parts) < 3 else parts[2]
 
+
     def authsetup(self, gp, name):
         """
         Setup an attribute authority.
@@ -51,6 +55,7 @@ class MaabeRW15(ABEncMultiAuth):
         pk = {'name': name, 'egga': egga, 'gy': gy}
         sk = {'name': name, 'alpha': alpha, 'y': y}
         return pk, sk
+
 
     def keygen(self, gp, sk, gid, attribute):
         """
@@ -70,6 +75,7 @@ class MaabeRW15(ABEncMultiAuth):
         KP = gp['g1'] ** t
         return {'K': K, 'KP': KP}
 
+
     def multiple_attributes_keygen(self, gp, sk, gid, attributes):
         """
         Generate a dictionary of secret keys for a user for a list of attributes.
@@ -83,6 +89,7 @@ class MaabeRW15(ABEncMultiAuth):
         for attribute in attributes:
             uk[attribute] = self.keygen(gp, sk, gid, attribute)
         return uk
+
 
     def encrypt(self, gp, pks, message, policy_str):
         """
@@ -112,6 +119,7 @@ class MaabeRW15(ABEncMultiAuth):
             C4[i] = F(attr) ** tx
         return {'policy': policy_str, 'C0': C0, 'C1': C1, 'C2': C2, 'C3': C3, 'C4': C4}
 
+
     def decrypt(self, gp, sk, ct):
         """
         Decrypt the ciphertext using the secret keys of the user.
@@ -134,3 +142,4 @@ class MaabeRW15(ABEncMultiAuth):
             B *= (ct['C1'][y] * pair(ct['C2'][y], sk['keys'][x]['K']) * pair(ct['C3'][y], H(sk['GID'])) * pair(
                 sk['keys'][x]['KP'], ct['C4'][y])) ** coefficients[y]
         return ct['C0'] / B
+        

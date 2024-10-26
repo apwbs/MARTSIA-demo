@@ -9,8 +9,8 @@ while [ $# -gt 0 ]; do
   case $key in
     --input|-i)
       input="$2"
-      shift # past argument
-      shift # past value
+      shift # Move to next argument
+      shift # Move to next value
       ;;
     *)
       echo "Unknown option $1"
@@ -31,12 +31,16 @@ if [ ! -f "$input" ]; then
   exit 1
 fi
 
-reader_lines=$(grep "ADDRESS" ../src/.env | grep -v "AUTHORITY\|CONTRACT\|SERVER\|CERTIFIER" | awk -F"_ADDRESS=" '{print $1}')
+# Get lines with ADDRESS, excluding certain keywords
+reader_lines=$(grep '^[^#]*'"ADDRESS" ../src/.env | grep -v "AUTHORITY\|CONTRACT\|SERVER\|CERTIFIER" | awk -F"_ADDRESS=" '{print $1}')
 
 echo "$reader_lines" | while IFS= read -r reader; do
+    # Read public key for each Authority
     python3 ../src/reader_public_key.py --reader "$reader"
     echo "✅ Read public key of $reader"
 done
-# Run the Python script with the provided arguments
+
+# Run the attribute certifier script with input file
 python3 ../src/attribute_certifier.py -i "$input"
 echo "✅ Attribute certifier done"
+
