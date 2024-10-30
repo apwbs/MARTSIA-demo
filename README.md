@@ -1,5 +1,7 @@
 # MARTSIA-demo
 
+Version of MARTSIA where the request and transmission of Authority key segments are carried out through TLS connections.
+
 ## Wiki
 Check out the [Wiki](https://github.com/apwbs/MARTSIA-demo/wiki) for a detailed documentation and step-by-step tutorial to run the system locally.
 
