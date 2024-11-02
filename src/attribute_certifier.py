@@ -31,7 +31,7 @@ def generate_attributes(roles_file):
     now = datetime.now()
     now = int(now.strftime("%Y%m%d%H%M%S%f"))
     random.seed(now)
-    process_instance_id = random.randint(1, 2 ** 64)
+    process_instance_id = random.randint(10_000_000_000_000_000_000, 18_446_744_073_709_551_615)
     print(f'process instance id: {process_instance_id}')
     
     # Load roles data from JSON input

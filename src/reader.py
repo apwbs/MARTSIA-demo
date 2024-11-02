@@ -119,16 +119,21 @@ def start(process_instance_id, message_id, slice_id, sender_address, output_fold
     getfile = api.cat(ciphertext_link)
     ciphertext_dict = json.loads(getfile)
     sender = response[1]
+    correctly_decrypted = False
     if ciphertext_dict['metadata']['process_instance_id'] == int(process_instance_id) \
             and ciphertext_dict['metadata']['message_id'] == int(message_id) \
             and ciphertext_dict['metadata']['sender'] == sender:
         slice_check = ciphertext_dict['header']
         if len(slice_check) == 1:
             actual_decryption(ciphertext_dict['header'][0], public_parameters, user_sk, output_folder)
+            correctly_decrypted = True
         elif len(slice_check) > 1:
             for remaining in slice_check:
                 if remaining['Slice_id'] == slice_id:
                     actual_decryption(remaining, public_parameters, user_sk, output_folder)
+                    correctly_decrypted = True
+    if correctly_decrypted == False:
+        raise RuntimeError("Decryption error: Please check that the message_id and slice_id are specified correctly. Note that caching is only applicable for the most recent encrypted message.")
 
 
 if __name__ == '__main__':

@@ -64,23 +64,34 @@ for i in $(seq 1 $count); do
 done
 
 # Validate message_id format and find it if needed
-if [ ${#message_id} -lt 18 ] || ! echo "$message_id" | grep -qE '^[0-9]+$'; then
+if ! echo "$message_id" | grep -qE '^[0-9]{20}$'; then
     matching_lines=$(grep "$message_id" "../src/.cache")
     if [ $(echo "$matching_lines" | wc -l) -eq 1 ]; then
         message_id=$(echo "$matching_lines" | grep -oP '\b\d+\b')
     fi
 fi
 
+# Count the number of slices
+count_of_slices=$(ipfs_link=$(python3 -c "import sys; sys.path.append('../src'); from block_int import retrieve_MessageIPFSLink; print(retrieve_MessageIPFSLink(int(sys.argv[1]))[0])" "$message_id") && ipfs cat "$ipfs_link" | python3 -c "import sys, json; data = sys.stdin.read(); print(len(json.loads(data).get('header', [])))")
+
 # Handle slice_id logic
 if [ -z "$slice_id" ]; then
+    if [ "$count_of_slices" -gt 1 ]; then
+    	echo "You need to specify the slice id (--slice_id) since the message_id has $count_of_slices slices!"
+    	exit 1
+    fi
     python3 ../src/reader.py --message_id "$message_id" \
         --reader_name "$requester_name" --output_folder "$output_folder"
 else
-    if [ ${#slice_id} -lt 18 ] || ! echo "$slice_id" | grep -qE '^[0-9]+$'; then
+    if ! echo "$slice_id" | grep -qE '^[0-9]{20}$'; then
         matching_lines=$(grep "$slice_id" "../src/.cache")
         if [ $(echo "$matching_lines" | wc -l) -eq 1 ]; then
             slice_id=$(echo "$matching_lines" | grep -oP '\b\d+\b')
         fi
+    fi
+    if [ "$count_of_slices" -eq 1 ]; then
+        echo "You do not need to specify the slice id (--slice_id) since the message_id has $count_of_slices slice!"
+        exit 1
     fi
     python3 ../src/reader.py --message_id "$message_id" --slice_id "$slice_id" \
         --reader_name "$requester_name" --output_folder "$output_folder"

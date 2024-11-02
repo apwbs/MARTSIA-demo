@@ -125,7 +125,7 @@ def cipher_data(groupObj, maabe, api, process_instance_id, sender_name, input_fi
         if len(access_policy) > 1:
             now = int(datetime.now().strftime("%Y%m%d%H%M%S%f"))
             random.seed(now)
-            slice_id = random.randint(1, 2 ** 64)
+            slice_id = random.randint(10_000_000_000_000_000_000, 18_446_744_073_709_551_615)
             dict_pol['Slice_id'] = slice_id
             print(f'slice id {file_name}: {slice_id}')
             with open('../src/.cache', 'a') as file:
@@ -136,7 +136,7 @@ def cipher_data(groupObj, maabe, api, process_instance_id, sender_name, input_fi
     # Generate metadata and send to IPFS
     now = int(datetime.now().strftime("%Y%m%d%H%M%S%f"))
     random.seed(now)
-    message_id = random.randint(1, 2 ** 64)
+    message_id = random.randint(10_000_000_000_000_000_000, 18_446_744_073_709_551_615)
     metadata = {
         'sender': sender_address,
         'process_instance_id': int(process_instance_id),
