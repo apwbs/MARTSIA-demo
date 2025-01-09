@@ -13,6 +13,7 @@ import base64
 import sqlite3
 import argparse
 from authorities_info import authorities_names_and_addresses
+from policy_plus import policy_plus
 
 def retrieve_data(authority_address, process_instance_id):
     """Retrieve names, public parameters, and public keys from the specified Authority"""
@@ -85,7 +86,9 @@ def cipher_data(groupObj, maabe, api, process_instance_id, sender_name, input_fi
     policies_path = os.path.abspath(policies_path)
     with open(policies_path, 'r') as policies_file:
         input_policies = json.load(policies_file)
-    
+    for policy in input_policies:
+        new_policy = policy_plus(input_policies[policy], len(authorities_names_and_addresses))
+        input_policies[policy] = new_policy
     file_contents = {}
     access_policy = {}
     
@@ -178,4 +181,3 @@ if __name__ == '__main__':
     x = conn.cursor()
     authorities_names_and_addresses = authorities_names_and_addresses()
     cipher_data(groupObj, maabe, api, process_instance_id, args.sender_name, args.input, args.policies)
-
