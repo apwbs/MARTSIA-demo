@@ -1,6 +1,6 @@
 # MARTSIA-demo
 
-Version of MARTSIA where the request and transmission of Authority key segments are carried out through TLS connections.
+MARTSIA (Multi-Authority Approach to Transaction Systems for Interoperating Applications) is an approach for secrecy-preserving, immutable, access-controlled information exchange via public blockchain for process management. In short, it resorts to Multi-Authority Ciphertext Policy Attributed Based Encryption (MA-CP-ABE) to handle the ciphering/deciphering cycle, a content-addressed Distributed Hash Table (DHT) file system (IPFS) to handle the storage of documents, and smart contracts to enforce the access grants and notarise the data flow.
 
 ## Wiki
 Check out the [Wiki](https://github.com/apwbs/MARTSIA-demo/wiki) for a detailed documentation and step-by-step tutorial to run the system locally.
