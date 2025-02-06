@@ -6,7 +6,7 @@ run_commands() {
     gnome-terminal -- bash -c "\
         docker exec -it martsia_ethereum_container bash -c ' \
             sleep 0.3 && \
-            cd MARTSIA-EVM-TLS/sh_files && \
+            cd MARTSIA-Demo/sh_files && \
             sleep 0.3 && \
             sh old/authority.sh --authority $authority; \
             sleep 10 && \
