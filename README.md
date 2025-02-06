@@ -12,7 +12,7 @@ We implemented the smart contract for this MARTSIA version in Solidity, making i
 In this version, the request and transmission of key segments between the Reader and Authorities are performed via **TLS connections**.
 
 ## Wiki
-For a detailed documentation and step-by-step tutorial to run this version locally, check out the [Wiki](https://github.com/apwbs/MARTSIA-demo/wiki).
+For a detailed documentation and step-by-step tutorial to run this version locally, check out the [Wiki](https://github.com/apwbs/MARTSIA-Demo/wiki).
 
 ## Video presentation
 Below we present a step-by-step video demonstrating the local execution of this version of MARTSIA.
