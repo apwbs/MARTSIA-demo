@@ -1,6 +1,6 @@
-# MARTSIA-EVM-TLS  
+# MARTSIA-Demo
 
-**Multi-Authority Approach to Transaction Systems for Interoperating Applications - Ethereum Virtual Machine - Transport Layer Security**  
+**Multi-Authority Approach to Transaction Systems for Interoperating Applications**  
 **** 
 
 MARTSIA is a decentralized approach for secrecy-preserving, immutable, access-controlled information exchange via public blockchain for process management. 
