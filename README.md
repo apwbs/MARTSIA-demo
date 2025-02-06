@@ -10,9 +10,6 @@ Several actors cooperate in a process execution within the framework: _(i)_ the 
 
 In this MARTSIA-EVM version, the request and transmission of key segments between the Reader and Authorities are performed via **TLS connections**. 
 
-## MARTSIA-EVM-OnChain
-Alternatively, there is another MARTSIA-EVM version called OnChain, where the request and transmission of key segments between the Reader and Authorities occurs directly on the blockchain using RSA encryption. For the **OnChain** repository, follow this [link](https://github.com/apwbs/MARTSIA-EVM-OnChain).
-
 ## Wiki
 For a detailed documentation and step-by-step tutorial to run this version locally, check out the [Wiki](https://github.com/apwbs/MARTSIA-demo/wiki).
 
